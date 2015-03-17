@@ -1,0 +1,13 @@
+api:
+  build: api
+  ports:
+    - "3000:3000"
+
+rethinkdb:
+  build: rethinkdb
+  ports:
+    - "8080:8080"
+    - "28015:28015"
+    - "29015:29015"
+  volumes:
+    - ./rethinkdb/data:/data

@@ -1,0 +1,7 @@
+{
+  "name": "strapdb-api",
+  "version": "0.0.1",
+  "dependencies": {
+    "koa": "0.6.0"
+  }
+}
