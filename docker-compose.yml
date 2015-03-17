@@ -2,6 +2,8 @@ api:
   build: api
   ports:
     - "3000:3000"
+  links:
+    - rethinkdb
 
 rethinkdb:
   build: rethinkdb
