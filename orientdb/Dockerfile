@@ -1,31 +1,37 @@
-FROM java:8
+FROM debian:jessie
 
 MAINTAINER Sean Li <mail@shang.li>
 
-# Install
+# Update the default application repository sources list
 
-WORKDIR /
+RUN apt-get update
 
-COPY orientdb-community-2.0.6.tar.gz /
+# Install supervisord
+RUN apt-get -y install supervisor
+RUN mkdir -p /var/log/supervisor
 
-RUN mkdir -p /opt/orient && \
-  tar -zxvf orientdb-community-2.0.6.tar.gz --strip-components=1 --directory /opt/orient && \
-  rm -rf orientdb-community-2.0.6.tar.gz
+# Install OrientDB dependencies
+RUN apt-get -y install openjdk-7-jdk git ant
 
-# Configs
+ENV ORIENTDB_VERSION 2.0.6
 
-RUN rm -rf /opt/orient/config
+# Build OrientDB cleaning up afterwards
+RUN cd && \
+    git clone https://github.com/orientechnologies/orientdb.git --single-branch --depth 1 --branch $ORIENTDB_VERSION && \
+    cd orientdb && \
+    ant clean installg && \
+    mv /root/releases/orientdb-community-* /opt/orientdb && \
+    rm -rf /opt/orientdb/databases/* ~/orientdb
 
-ADD conf/* /opt/orient/config/
+# Use supervisord to start OrientDB
+ADD supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+ADD orientdb-server-config.xml /opt/orientdb/config/orientdb-server-config.xml
 
 # Expose the necessary ports
+EXPOSE 2424 2480
 
-EXPOSE 2424 2480 5701
+# Set the user to run OrientDB daemon
+USER root
 
-# Setup default environment
-
-ENV IP=0.0.0.0 TCP=true AWS=false AWS_ACCESS_KEY=NOTSET AWS_SECRET_KEY=NOTSET AWS_REGION=eu-west-1 AWS_SECURITY_GROUP=core MEMBERS=0.0.0.0
-
-# Set the default command
-
-CMD /opt/orient/config/orient.sh
+# Default command when starting the container
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

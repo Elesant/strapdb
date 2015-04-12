@@ -5,20 +5,8 @@ api:
   links:
     - orientdb
 
-rethinkdb:
-  build: rethinkdb
-  ports:
-    - "8080:8080"
-    - "28015:28015"
-    - "29015:29015"
-  volumes:
-    - ./rethinkdb/data:/data
-
 orientdb:
   build: orientdb
   ports:
     - "2424:2424"
     - "2480:2480"
-    - "5701:5701"
-  volumes:
-    - ./orientdb/conf:/opt/orient/config
