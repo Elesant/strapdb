@@ -3,7 +3,7 @@ api:
   ports:
     - "3000:3000"
   links:
-    - rethinkdb
+    - orientdb
 
 rethinkdb:
   build: rethinkdb
@@ -13,3 +13,12 @@ rethinkdb:
     - "29015:29015"
   volumes:
     - ./rethinkdb/data:/data
+
+orientdb:
+  build: orientdb
+  ports:
+    - "2424:2424"
+    - "2480:2480"
+    - "5701:5701"
+  volumes:
+    - ./orientdb/conf:/opt/orient/config
